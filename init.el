@@ -369,6 +369,7 @@ you should place your code here."
                                 (indent-tabs-mode . t)))
   (setq c-default-style "linux-kernel")
   (setq-default indent-tabs-mode nil
+                fill-column 80
                 tab-width 8)
 
 
@@ -379,6 +380,7 @@ you should place your code here."
                       :foreground "#00a8a8"
                       :weight 'bold)
   (add-hook 'prog-mode-hook 'whitespace-mode)
+  (add-hook 'prog-mode-hook (lambda () (fci-mode 1)))
 
 
   ;; Make copy/paste working with the mouse in X11 terminals.
