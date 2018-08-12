@@ -8,7 +8,7 @@
   "blog-admin files location")
 
 (setq-default
- org-agenda-dir "d:/org-notes"
+ org-agenda-dir "~/org"
  deft-dir "d:/org-notes"
  blog-admin-dir "~/zilongshanren.com")
 
