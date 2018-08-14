@@ -352,18 +352,16 @@ you should place your code here."
       (* (max steps 1)
          c-basic-offset)))
   (c-add-style "linux-user" '("linux"
-                              (c-offsets-alist
-                               (arglist-cont-nonempty
-                                c-lineup-gcc-asm-reg
-                                c-lineup-arglist-tabs-only))
+                              (c-offsets-alist (arglist-cont-nonempty
+                                                c-lineup-gcc-asm-reg
+                                                c-lineup-arglist-tabs-only))
                               (c-basic-offset . 4)
                               (tab-width . 4)
                               (indent-tabs-mode . nil)))
   (c-add-style "linux-kernel" '("linux"
-                                (c-offsets-alist
-                                 (arglist-cont-nonempty
-                                  c-lineup-gcc-asm-reg
-                                  c-lineup-arglist-tabs-only))
+                                (c-offsets-alist (arglist-cont-nonempty
+                                                  c-lineup-gcc-asm-reg
+                                                  c-lineup-arglist-tabs-only))
                                 (c-basic-offset . 8)
                                 (tab-width . 8)
                                 (indent-tabs-mode . t)))
