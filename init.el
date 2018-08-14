@@ -380,7 +380,7 @@ you should place your code here."
                       :foreground "#00a8a8"
                       :weight 'bold)
   (add-hook 'prog-mode-hook 'whitespace-mode)
-  (add-hook 'prog-mode-hook (lambda () (fci-mode 1)))
+  (add-hook 'prog-mode-hook 'turn-on-fci-mode)
 
 
   ;; Make copy/paste working with the mouse in X11 terminals.
