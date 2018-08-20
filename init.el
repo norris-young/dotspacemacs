@@ -342,26 +342,11 @@ you should place your code here."
            (concatenate 'string "--since="
                         (org-read-date nil nil "-1y")))))
 
-
-  (defun c-lineup-arglist-tabs-only (ignored)
-    "Line up argument lists by tabs, not spaces"
-    (let* ((anchor (c-langelem-pos c-syntactic-element))
-           (column (c-langelem-2nd-pos c-syntactic-element))
-           (offset (- (1+ column) anchor))
-           (steps (floor offset c-basic-offset)))
-      (* (max steps 1)
-         c-basic-offset)))
   (c-add-style "linux-user" '("linux"
-                              (c-offsets-alist (arglist-cont-nonempty
-                                                c-lineup-gcc-asm-reg
-                                                c-lineup-arglist-tabs-only))
                               (c-basic-offset . 4)
                               (tab-width . 4)
                               (indent-tabs-mode . nil)))
   (c-add-style "linux-kernel" '("linux"
-                                (c-offsets-alist (arglist-cont-nonempty
-                                                  c-lineup-gcc-asm-reg
-                                                  c-lineup-arglist-tabs-only))
                                 (c-basic-offset . 8)
                                 (tab-width . 8)
                                 (indent-tabs-mode . t)))
