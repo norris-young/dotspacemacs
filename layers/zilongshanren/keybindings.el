@@ -9,11 +9,7 @@
 ;;
 ;;; License: GPLv3
 
-;; A complementary binding to the apropos-command (C-h a)
-(global-set-key (kbd "C-c a") 'org-agenda)
 (define-key global-map (kbd "<f9>") 'org-capture)
-(define-key global-map (kbd "C-c t") 'org-capture)
-(define-key global-map (kbd "<f8>") 'zilongshanren/show-current-buffer-major-mode)
 
 (global-set-key (kbd "C-c b") 'org-iswitchb)
 
