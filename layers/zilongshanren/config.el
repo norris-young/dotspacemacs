@@ -9,7 +9,7 @@
 
 (setq-default
  org-agenda-dir "~/org"
- deft-dir "d:/org-notes"
+ deft-dir "~/org"
  blog-admin-dir "~/zilongshanren.com")
 
 ;;load sensitive data
