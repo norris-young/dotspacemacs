@@ -323,6 +323,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
    )
   )
 
+(defvar org-agenda-dir ""
+  "gtd org files location")
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -382,6 +385,72 @@ you should place your code here."
   (define-key evil-insert-state-map (kbd "C-h") 'backward-char)
   (define-key evil-insert-state-map (kbd "C-l") 'forward-char)
 
+  (setq-default org-agenda-dir "~/org")
+  (add-hook 'org-mode-hook (lambda () (spacemacs/toggle-line-numbers-off)) 'append)
+  (with-eval-after-load 'org
+    (progn
+      (require 'org)
+      (setq org-refile-use-outline-path 'file)
+      (setq org-outline-path-complete-in-steps nil)
+      (setq org-refile-targets
+            '((nil :maxlevel . 4)
+              (org-agenda-files :maxlevel . 4)))
+
+      (setq org-agenda-inhibit-startup t) ;; ~50x speedup
+      (setq org-agenda-span 'day)
+      (setq org-agenda-use-tag-inheritance nil) ;; 3-4x speedup
+      (setq org-agenda-window-setup 'current-window)
+
+      (setq org-log-done t)
+
+      (setq org-todo-keywords
+            (quote ((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d!/!)")
+                    (sequence "WAITING(w@/!)" "SOMEDAY(S)" "|" "CANCELLED(c@/!)" "MEETING(m)" "PHONE(p)"))))
+
+      ;; define the refile targets
+      (setq org-agenda-file-note (expand-file-name "notes.org" org-agenda-dir))
+      (setq org-agenda-file-gtd (expand-file-name "gtd.org" org-agenda-dir))
+      (setq org-agenda-file-code-snippet (expand-file-name "snippet.org" org-agenda-dir))
+      (setq org-default-notes-file (expand-file-name "gtd.org" org-agenda-dir))
+      (setq org-agenda-files (list org-agenda-dir))
+
+      ;; the %i would copy the selected text into the template
+      ;;http://www.howardism.org/Technical/Emacs/journaling-org.html
+      ;;add multi-file journal
+      (setq org-capture-templates
+            '(("t" "todo" entry (file+headline org-agenda-file-gtd "Workspace")
+               "* TODO [#B] %?\n  %i\n"
+               :empty-lines 1)
+              ("n" "notes" entry (file+headline org-agenda-file-note "Quick notes")
+               "* %?\n  %i\n %U"
+               :empty-lines 1)
+              ("s" "code snippet" entry (file org-agenda-file-code-snippet)
+               "* %?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC")
+              ("w" "work" entry (file+headline org-agenda-file-gtd "Work")
+               "* TODO [#A] %?\n  %i\n %U"
+               :empty-lines 1)
+              ("c" "chrome" entry (file+headline org-agenda-file-note "Quick notes")
+               "* TODO [#C] %?\n %(zilongshanren/retrieve-chrome-current-tab-url)\n %i\n %U"
+               :empty-lines 1)
+              ("l" "links" entry (file+headline org-agenda-file-note "Quick notes")
+               "* TODO [#C] %?\n  %i\n %a \n %U"
+               :empty-lines 1)))
+
+      ;;An entry without a cookie is treated just like priority ' B '.
+      ;;So when create new task, they are default 重要且紧急
+      (setq org-agenda-custom-commands
+            '(
+              ("w" . "任务安排")
+              ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")
+              ("wb" "重要且不紧急的任务" tags-todo "-Weekly-Monthly-Daily+PRIORITY=\"B\"")
+              ("wc" "不重要且紧急的任务" tags-todo "+PRIORITY=\"C\"")
+              ("p" . "项目安排")
+              ("W" "Weekly Review"
+               ((stuck "") ;; review stuck projects as designated by org-stuck-projects
+                (tags-todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
+                ))))
+      )
+    )
   )
 
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
