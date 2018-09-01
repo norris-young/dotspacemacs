@@ -271,7 +271,7 @@ values."
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
    ;; (default nil)
-   dotspacemacs-line-numbers 'relative
+   dotspacemacs-line-numbers t
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
@@ -351,10 +351,17 @@ you should place your code here."
                                 (c-basic-offset . 8)
                                 (tab-width . 8)
                                 (indent-tabs-mode . t)))
-  (setq c-default-style "linux-kernel")
-  (setq-default indent-tabs-mode nil
+  (setq c-default-style "linux-user")
+  (setq-default indent-tabs-mode t
                 fill-column 80
                 tab-width 8)
+  (add-hook 'c-mode-hook
+            (lambda ()
+              (let ((filename (buffer-file-name)))
+                (when (and filename
+                           (or (string-match "bootloader" filename)
+                               (string-match "kernel.*linux" filename)))
+                  (c-set-style "linux-kernel")))))
 
 
   (require 'whitespace)
