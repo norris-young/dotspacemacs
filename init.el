@@ -419,20 +419,26 @@ you should place your code here."
       (setq org-capture-templates
             '(("t" "todo" entry (file+headline org-agenda-file-gtd "Workspace")
                "* TODO [#B] %?\n  %i\n"
+               :prepend t
                :empty-lines 1)
               ("n" "notes" entry (file+headline org-agenda-file-note "Quick notes")
                "* %?\n  %i\n %U"
+               :prepend t
                :empty-lines 1)
               ("s" "code snippet" entry (file org-agenda-file-code-snippet)
-               "* %?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC")
+               "* %?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC"
+               :prepend t)
               ("w" "work" entry (file+headline org-agenda-file-gtd "Work")
                "* TODO [#A] %?\n  %i\n %U"
+               :prepend t
                :empty-lines 1)
               ("c" "chrome" entry (file+headline org-agenda-file-note "Quick notes")
                "* TODO [#C] %?\n %(zilongshanren/retrieve-chrome-current-tab-url)\n %i\n %U"
+               :prepend t
                :empty-lines 1)
               ("l" "links" entry (file+headline org-agenda-file-note "Quick notes")
                "* TODO [#C] %?\n  %i\n %a \n %U"
+               :prepend t
                :empty-lines 1)))
 
       ;;An entry without a cookie is treated just like priority ' B '.
