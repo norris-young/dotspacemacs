@@ -562,8 +562,8 @@ before packages are loaded."
       ;;http://www.howardism.org/Technical/Emacs/journaling-org.html
       ;;add multi-file journal
       (setq org-capture-templates
-            '(("t" "todo" entry (file+headline org-agenda-file-gtd "Workspace")
-               "* TODO [#B] %?\n  %i\n"
+            '(("t" "todo" entry (file+headline org-agenda-file-gtd "Stuff")
+               "* TODO [#B] %?\n  %i\n %U"
                :prepend t
                :empty-lines 1)
               ("n" "notes" entry (file+headline org-agenda-file-note "Quick notes")
