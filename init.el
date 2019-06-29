@@ -34,19 +34,30 @@ This function should only modify configuration layer settings."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     ;; Added layers by norris.young
+     asm
+     c-c++
+     (gtags :variables
+            gtags-enable-by-default t
+            helm-gtags-auto-update t)
+     imenu-list
+     neotree
+     python
+     semantic
+     shell-scripts
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
      ;; `M-m f e R' (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     ;; auto-completion
+     (auto-completion :variables auto-completion-enable-sort-by-usage t)
      ;; better-defaults
      emacs-lisp
-     ;; git
+     (git :variables git-magit-status-fullscreen t)
      helm
-     ;; markdown
+     markdown
      multiple-cursors
-     ;; org
+     (org :variables org-want-todo-bindings t)
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
@@ -63,7 +74,7 @@ This function should only modify configuration layer settings."
    ;; To use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(dts-mode)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -191,7 +202,8 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(spacemacs-dark
+   dotspacemacs-themes '(sanityinc-tomorrow-eighties
+                         spacemacs-dark
                          spacemacs-light)
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
@@ -209,7 +221,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; Default font or prioritized list of fonts.
    dotspacemacs-default-font '("Source Code Pro"
-                               :size 13
+                               :size 17
                                :weight normal
                                :width normal)
 
@@ -361,7 +373,7 @@ It should only modify the values of Spacemacs settings."
    ;;   :size-limit-kb 1000)
    ;; When used in a plist, `visual' takes precedence over `relative'.
    ;; (default nil)
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers t
 
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
@@ -454,10 +466,13 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
   (setq configuration-layer-elpa-archives
         '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
           ("org-cn"   . "http://elpa.emacs-china.org/org/")
           ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")))
+  ;; Set the proxy when spacemacs download new packages.
+  url-proxy-services '(("https" . "127.0.0.1:1080"))
   )
 
 (defun dotspacemacs/user-load ()
@@ -467,13 +482,140 @@ This function is called only while dumping Spacemacs configuration. You can
 dump."
   )
 
+(defvar org-agenda-dir ""
+  "gtd org files location")
+
 (defun dotspacemacs/user-config ()
   "Configuration for user code:
 This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+  (autoload 'org-read-date "org")
+  (defun magit-org-read-date (prompt &optional _default)
+    (org-read-date 'with-time nil nil prompt))
+  (require 'magit)
+  (magit-define-popup-option 'magit-log-popup
+    ?x "Since date" "--since=" #'magit-org-read-date)
+  (custom-set-variables
+   '(magit-log-arguments
+     (list "--graph" "--decorate" "-n256"
+           (concatenate 'string "--since="
+                        (org-read-date nil nil "-1y")))))
+
+  (c-add-style "linux-user" '("linux"
+                              (c-basic-offset . 4)
+                              (tab-width . 4)
+                              (indent-tabs-mode . nil)))
+  (c-add-style "linux-kernel" '("linux"
+                                (c-basic-offset . 8)
+                                (tab-width . 8)
+                                (indent-tabs-mode . t)))
+  (setq c-default-style "linux-user")
+  (setq-default indent-tabs-mode t
+                fill-column 80
+                tab-width 8)
+  (add-hook 'c-mode-hook
+            (lambda ()
+              (let ((filename (buffer-file-name)))
+                (when (and filename
+                           (or (string-match "bootloader" filename)
+                               (string-match "kernel.*linux" filename)))
+                  (c-set-style "linux-kernel")))))
+
+
+  (require 'whitespace)
+  (setq whitespace-style '(face trailing tabs tab-mark))
+  (set-face-attribute 'whitespace-tab nil
+                      :background "#282828"
+                      :foreground "#00a8a8"
+                      :weight 'bold)
+  (add-hook 'prog-mode-hook 'whitespace-mode)
+  (add-hook 'prog-mode-hook 'turn-on-fci-mode)
+
+
+  ;; Make copy/paste working with the mouse in X11 terminals.
+  ;; Disable the mouse support in X11 terminals in order to enable copying/pasting with the mouse.
+  (xterm-mouse-mode -1)
+  (menu-bar-mode)
+
+  ;; Move cursor several time in insert mode.
+  (define-key evil-insert-state-map (kbd "C-h") 'backward-char)
+  (define-key evil-insert-state-map (kbd "C-l") 'forward-char)
+
+  (setq-default org-agenda-dir "~/org")
+  (add-hook 'org-mode-hook (lambda () (spacemacs/toggle-line-numbers-off)) 'append)
+  (with-eval-after-load 'org
+    (progn
+      (require 'org)
+      (setq org-refile-use-outline-path 'file)
+      (setq org-outline-path-complete-in-steps nil)
+      (setq org-refile-targets
+            '((nil :maxlevel . 4)
+              (org-agenda-files :maxlevel . 4)))
+
+      (setq org-agenda-inhibit-startup t) ;; ~50x speedup
+      (setq org-agenda-span 'day)
+      (setq org-agenda-use-tag-inheritance nil) ;; 3-4x speedup
+      (setq org-agenda-window-setup 'current-window)
+
+      (setq org-log-done t)
+
+      (setq org-todo-keywords
+            (quote ((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d!/!)")
+                    (sequence "WAITING(w@/!)" "SOMEDAY(S)" "|" "CANCELLED(c@/!)" "MEETING(m)" "PHONE(p)"))))
+
+      ;; define the refile targets
+      (setq org-agenda-file-note (expand-file-name "notes.org" org-agenda-dir))
+      (setq org-agenda-file-gtd (expand-file-name "gtd.org" org-agenda-dir))
+      (setq org-agenda-file-code-snippet (expand-file-name "snippet.org" org-agenda-dir))
+      (setq org-default-notes-file (expand-file-name "gtd.org" org-agenda-dir))
+      (setq org-agenda-files (list org-agenda-dir))
+
+      ;; the %i would copy the selected text into the template
+      ;;http://www.howardism.org/Technical/Emacs/journaling-org.html
+      ;;add multi-file journal
+      (setq org-capture-templates
+            '(("t" "todo" entry (file+headline org-agenda-file-gtd "Stuff")
+               "* TODO [#B] %?\n  %i\n %U"
+               :prepend t
+               :empty-lines 1)
+              ("n" "notes" entry (file+headline org-agenda-file-note "Quick notes")
+               "* %?\n  %i\n %U"
+               :prepend t
+               :empty-lines 1)
+              ("s" "code snippet" entry (file org-agenda-file-code-snippet)
+               "* %?\t%^g\n#+BEGIN_SRC %^{language}\n\n#+END_SRC"
+               :prepend t)
+              ("w" "work" entry (file+headline org-agenda-file-gtd "Work")
+               "* TODO [#A] %?\n  %i\n %U"
+               :prepend t
+               :empty-lines 1)
+              ("c" "chrome" entry (file+headline org-agenda-file-note "Quick notes")
+               "* TODO [#C] %?\n %(zilongshanren/retrieve-chrome-current-tab-url)\n %i\n %U"
+               :prepend t
+               :empty-lines 1)
+              ("l" "links" entry (file+headline org-agenda-file-note "Quick notes")
+               "* TODO [#C] %?\n  %i\n %a \n %U"
+               :prepend t
+               :empty-lines 1)))
+
+      ;;An entry without a cookie is treated just like priority ' B '.
+      ;;So when create new task, they are default 重要且紧急
+      (setq org-agenda-custom-commands
+            '(
+              ("w" . "任务安排")
+              ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")
+              ("wb" "重要且不紧急的任务" tags-todo "-Weekly-Monthly-Daily+PRIORITY=\"B\"")
+              ("wc" "不重要且紧急的任务" tags-todo "+PRIORITY=\"C\"")
+              ("p" . "项目安排")
+              ("W" "Weekly Review"
+               ((stuck "") ;; review stuck projects as designated by org-stuck-projects
+                (tags-todo "PROJECT") ;; review all projects (assuming you use todo keywords to designate projects)
+                ))))
+      )
+    )
   )
 
-;; Do not write anything past this comment. This is where Emacs will
-;; auto-generate custom variable definitions.
+(setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
+(load custom-file 'no-error 'no-message)
