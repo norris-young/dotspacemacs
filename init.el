@@ -469,11 +469,11 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (setq configuration-layer-elpa-archives
-        '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
-          ("org-cn"   . "http://elpa.emacs-china.org/org/")
-          ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")))
+        '(("melpa-cn" . "https://elpa.emacs-china.org/melpa/")
+          ("org-cn"   . "https://elpa.emacs-china.org/org/")
+          ("gnu-cn"   . "https://elpa.emacs-china.org/gnu/")))
   ;; Set the proxy when spacemacs download new packages.
-  url-proxy-services '(("https" . "127.0.0.1:1080"))
+  url-proxy-services '(("socks5" . "127.0.0.1:1080"))
   )
 
 (defun dotspacemacs/user-load ()
