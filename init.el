@@ -44,7 +44,7 @@ This function should only modify configuration layer settings."
      neotree
      python
      (semantic :variables
-	       company-semantic-begin-after-member-access nil)
+               company-semantic-begin-after-member-access nil)
      shell-scripts
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
