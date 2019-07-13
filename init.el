@@ -76,7 +76,8 @@ This function should only modify configuration layer settings."
    ;; To use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '(dts-mode)
+   dotspacemacs-additional-packages '(dts-mode
+                                      youdao-dictionary)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -492,6 +493,10 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+  (global-set-key (kbd "M-s f") 'youdao-dictionary-search-at-point)
+  (global-set-key (kbd "M-s v") 'youdao-dictionary-play-voice-at-point)
+
   (autoload 'org-read-date "org")
   (defun magit-org-read-date (prompt &optional _default)
     (org-read-date 'with-time nil nil prompt))
