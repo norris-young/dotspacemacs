@@ -41,12 +41,14 @@ This function should only modify configuration layer settings."
             gtags-enable-by-default t
             helm-gtags-auto-update t)
      imenu-list
+     javascript
      neotree
      python
      (semantic :variables
                company-semantic-begin-after-member-access nil)
      shell-scripts
      vimscript
+     windows-scripts
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
@@ -157,7 +159,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil, a form that evaluates to a package directory. For example, to
    ;; use different package directories for different Emacs versions, set this
    ;; to `emacs-version'. (default 'emacs-version)
-   dotspacemacs-elpa-subdirectory 'emacs-version
+   dotspacemacs-elpa-subdirectory nil
 
    ;; One of `vim', `emacs' or `hybrid'.
    ;; `hybrid' is like `vim' except that `insert state' is replaced by the
